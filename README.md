@@ -4,8 +4,21 @@
 
 ### The motivation for this package came from a finding in my own work in which I found that gene aliases were introducing significant batch effect, even after integration methods were implemented. I discovered that these alternate and outdated, as well as sample-specific gene names, were a small but significant source of noise in the data. I hope that this provides an easy and relatively quick way of removing this source of variation.
 
+### Installation
+#### Install Via GitHub
+
+```r
+devtools::install_github("ryanreis333/R2easygene")
+```
+
 ![Logo](images/HGNC_image.png)
 
 ### The package relies on the HGNChelper package from the HUGO Gene Nomenclature Committee, above.
 
-### Please reach out or submit requests/pulls with any questions, comments, or if you can help. Thanks!
+## Bug Reports/New Features
+
+#### If you run into any issues or bugs please submit a [GitHub issue](https://github.com/ryanreis333/R2easygene/issues) with details of the issue.
+
+- If possible please include a [reproducible example](https://reprex.tidyverse.org/). 
+
+#### [Pull Requests](https://github.com/ryanreis333/R2easygene/pulls) are welcome for bug fixes, new features, or enhancements.
