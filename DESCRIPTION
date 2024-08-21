@@ -1,0 +1,13 @@
+Package: R2easygene
+Type: Package
+Title: Updates gene names to be consistent across samples using proper gene naming conventions
+Version: 0.1.0
+Author@R: person("Ryan", "Reis", email = "ryanreis333@gmail.com", role = c("aut", "cre"))
+Description: Provides a fast and simple way to update gene names to the latest approved symbols, ensuring consistency across samples, especially in projects that compile data from multiple experiments. It addresses discrepancies in gene naming conventions that may cause batch effects when raw data is not available for realignment.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 4.0.0)
+Imports: 
+    Seurat,
+    HGHChelper
