@@ -8,6 +8,7 @@
 #### Install Via GitHub
 
 ```r
+install.packages("devtools")
 devtools::install_github("ryanreis333/R2easygene")
 ```
 
