@@ -15,6 +15,11 @@ devtools::install_github("ryanreis333/R2easygene")
 
 #### The package relies on the HGNChelper package from the HUGO Gene Nomenclature Committee, above.
 
+#### If there is any issues with loading this package alongside R2easygene, you can downlaod this separately by running the following:
+```r
+install.packages("HGNChelper")
+```
+
 ## Bug Reports/New Features
 
 #### If you run into any issues or bugs please submit a [GitHub issue](https://github.com/ryanreis333/R2easygene/issues) with details of the issue.
