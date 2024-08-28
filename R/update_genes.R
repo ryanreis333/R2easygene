@@ -52,22 +52,8 @@ update_genes <- function(Seurat_obj, assay = "RNA", return_seurat = TRUE, min.ce
   all_genes <- unique(c(hgnc.table$Symbol, hgnc.table$Approved.Symbol))
   approved_genes <- unique(hgnc.table$Approved.Symbol)
 
-  # Extract counts matrix from the specified assay in Seurat object
-  if (!(assay %in% names(Seurat_obj@assays))) {
-    stop(paste("Assay", assay, "does not exist in Seurat object."))
-  }
+  mat <- Seurat_obj[[assay]]@counts
 
-  # Check if @counts or @layers$counts exists
-  if ("counts" %in% names(Seurat_obj[[assay]])) {
-    mat <- Seurat_obj[[assay]]$counts
-  } else {
-    stop("The counts matrix is not accessible. Please check the slot names.")
-  }
-
-# Check if the counts matrix is valid
-if (!is.matrix(mat) && !is.data.frame(mat)) {
-  stop("The counts matrix is not valid or does not exist.")
-}
 
 # Filter genes with low counts and non-matching genes
 keep_genes <- rownames(mat)[rowSums(mat) >= min.cells & rownames(mat) %in% all_genes]
