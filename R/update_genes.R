@@ -58,10 +58,10 @@ update_genes <- function(Seurat_obj, assay = "RNA", return_seurat = TRUE, min.ce
   }
 
   # Check if @counts or @layers$counts exists
-  if ("counts" %in% names(Seurat_obj[[assay]]@assays[[assay]]@layers)) {
+  if ("counts" %in% names(Seurat_obj[[assay]]@layers)) {
     mat <- Seurat_obj[[assay]]@assays[[assay]]@layers$counts
-  } else if ("counts" %in% names(Seurat_obj[[assay]]@assays[[assay]]@data)) {
-    mat <- Seurat_obj[[assay]]@assays[[assay]]@data$counts
+  } else if ("counts" %in% names(Seurat_obj[[assay]])) {
+    mat <- Seurat_obj[[assay]]@assays[[assay]]@counts
   } else {
     stop("The counts matrix is not accessible. Please check the slot names.")
   }
