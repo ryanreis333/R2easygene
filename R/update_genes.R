@@ -53,6 +53,7 @@ all_genes <- unique(c(hgnc.table$Symbol, hgnc.table$Approved.Symbol))
 approved_genes <- unique(hgnc.table$Approved.Symbol)
 
 # Extract counts matrix from the specified assay in Seurat object
+assay <- "RNA"
 mat <- Seurat_obj[[assay]]@counts
 
 # Check if the counts matrix is valid
