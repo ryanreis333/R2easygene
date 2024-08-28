@@ -53,7 +53,7 @@ all_genes <- unique(c(hgnc.table$Symbol, hgnc.table$Approved.Symbol))
 approved_genes <- unique(hgnc.table$Approved.Symbol)
 
 # Extract counts matrix from the specified assay in Seurat object
-mat <- Seurat_obj[[assay]]@counts
+mat <- Seurat_obj[[assay]]@layers$counts
 rownames(mat) <- rownames(Seurat_obj)
 
 # Filter genes with low counts and non-matching genes
