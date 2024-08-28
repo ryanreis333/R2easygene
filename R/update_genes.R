@@ -45,16 +45,26 @@
 
 update_genes <- function(Seurat_obj, assay = "RNA", return_seurat = TRUE, min.cells = 3, min.features = 200) {
 
-# Load gene symbol mapping table from HGNChelper
-hgnc.table <- HGNChelper::hgnc.table
+  # Load gene symbol mapping table from HGNChelper
+  hgnc.table <- HGNChelper::hgnc.table
 
-# Load gene symbols
-all_genes <- unique(c(hgnc.table$Symbol, hgnc.table$Approved.Symbol))
-approved_genes <- unique(hgnc.table$Approved.Symbol)
+  # Load gene symbols
+  all_genes <- unique(c(hgnc.table$Symbol, hgnc.table$Approved.Symbol))
+  approved_genes <- unique(hgnc.table$Approved.Symbol)
 
-# Extract counts matrix from the specified assay in Seurat object
-assay <- "RNA"
-mat <- Seurat_obj[[assay]]@counts
+  # Extract counts matrix from the specified assay in Seurat object
+  if (!(assay %in% names(Seurat_obj@assays))) {
+    stop(paste("Assay", assay, "does not exist in Seurat object."))
+  }
+
+  # Check if @counts or @layers$counts exists
+  if ("counts" %in% names(Seurat_obj[[assay]]@assays[[assay]]@layers)) {
+    mat <- Seurat_obj[[assay]]@assays[[assay]]@layers$counts
+  } else if ("counts" %in% names(Seurat_obj[[assay]]@assays[[assay]]@data)) {
+    mat <- Seurat_obj[[assay]]@assays[[assay]]@data$counts
+  } else {
+    stop("The counts matrix is not accessible. Please check the slot names.")
+  }
 
 # Check if the counts matrix is valid
 if (!is.matrix(mat) && !is.data.frame(mat)) {
