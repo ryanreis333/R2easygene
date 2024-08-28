@@ -54,7 +54,11 @@ approved_genes <- unique(hgnc.table$Approved.Symbol)
 
 # Extract counts matrix from the specified assay in Seurat object
 mat <- Seurat_obj[[assay]]@counts
-rownames(mat) <- rownames(Seurat_obj)
+
+# Check if the counts matrix is valid
+if (!is.matrix(mat) && !is.data.frame(mat)) {
+  stop("The counts matrix is not valid or does not exist.")
+}
 
 # Filter genes with low counts and non-matching genes
 keep_genes <- rownames(mat)[rowSums(mat) >= min.cells & rownames(mat) %in% all_genes]
