@@ -56,8 +56,8 @@ update_genes <- function(Seurat_obj, assay = "RNA", return_seurat = TRUE, min.ce
 
 
 # Filter genes with low counts and non-matching genes
-keep_genes <- rownames(mat)[rowSums(mat) >= min.cells & rownames(mat) %in% all_genes]
-mat <- mat[keep_genes, ]
+#keep_genes <- rownames(mat)[rowSums(mat) >= min.cells & rownames(mat) %in% all_genes]
+#mat <- mat[keep_genes, ]
 
 # Fix gene symbols
 symbol_map <- setNames(hgnc.table$Approved.Symbol, hgnc.table$Symbol)
