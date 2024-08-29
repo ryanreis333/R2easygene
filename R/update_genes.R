@@ -52,60 +52,67 @@ update_genes <- function(Seurat_obj, assay = "RNA", return_seurat = TRUE, min.ce
   all_genes <- unique(c(hgnc.table$Symbol, hgnc.table$Approved.Symbol))
   approved_genes <- unique(hgnc.table$Approved.Symbol)
 
-  mat <- Seurat_obj[[assay]]@counts
+  # Extract counts matrix from the specified assay in Seurat object
+  mat <- GetAssayData(new.obj, assay = "RNA")
+  rownames(mat) <- rownames(new.obj)
+  colnames(mat) <- colnames(new.obj)
 
+  # Filter genes with low counts and non-matching genes
+  keep_genes <- rownames(mat)[rowSums(mat) >= 3 & rownames(mat) %in% all_genes]
+  mat <- mat[keep_genes, ]
 
-# Filter genes with low counts and non-matching genes
-#keep_genes <- rownames(mat)[rowSums(mat) >= min.cells & rownames(mat) %in% all_genes]
-#mat <- mat[keep_genes, ]
+  # Fix gene symbols
+  symbol_map <- setNames(hgnc.table$Approved.Symbol, hgnc.table$Symbol)
+  old_names <- rownames(mat)
+  new_names <- symbol_map[old_names]
+  #df <- data.frame(old_names = old_names, new_names = new_names)
 
-# Fix gene symbols
-symbol_map <- setNames(hgnc.table$Approved.Symbol, hgnc.table$Symbol)
-new_names <- rownames(mat)
-mapped_indices <- match(new_names, names(symbol_map))
-valid_indices <- !is.na(mapped_indices)
-new_names[valid_indices] <- symbol_map[mapped_indices[valid_indices]]
+  rownames(mat) <- new_names
+  #setdiff(rownames(mat), old_names)
+  #df <- as.data.frame(table(rownames(mat)))
+  #table(duplicate_genes)
 
-# Sort both mat and new_names
-order_idx <- order(new_names)
-mat <- mat[order_idx, ]
-new_names <- new_names[order_idx]
+  # Identify duplicate genes
+  duplicate_genes <- rownames(mat)[duplicated(rownames(mat)) | duplicated(rownames(mat), fromLast = TRUE)]
+  unique_genes <- setdiff(rownames(mat), duplicate_genes)
 
-# Identify duplicate genes
-duplicate_genes <- new_names[duplicated(new_names) | duplicated(new_names, fromLast = TRUE)]
-unique_genes <- setdiff(new_names, duplicate_genes)
+  # Create the matrix for unique and duplicate genes
+  unique_mat <- mat[rownames(mat) %in% unique_genes, , drop = FALSE]
+  duplicate_mat <- mat[rownames(mat) %in% duplicate_genes, , drop = FALSE]
 
-# Subset the matrix
-unique_mat <- mat[new_names %in% unique_genes, , drop = FALSE]
-duplicate_mat <- mat[new_names %in% duplicate_genes, , drop = FALSE]
+  #df <- as.data.frame(table(rownames(unique_mat)))
+  #df <- as.data.frame(table(rownames(duplicate_mat)))
+  # Sum rows by row names
 
-# Sum the duplicate rows
-summed_duplicates <- rowsum(duplicate_mat, new_names[new_names %in% duplicate_genes])
+  summed_duplicates <- rowsum(duplicate_mat, group = rownames(duplicate_mat))
 
-# Combine the results
-final_mat <- rbind(unique_mat, summed_duplicates)
+  # Convert the result back to a sparse matrix
+  summed_duplicates <- as(summed_duplicates, "sparseMatrix")
+  #df <- as.data.frame(table(rownames(summed_duplicates)))
 
-# Sort the final matrix by gene names
-final_mat <- final_mat[order(rownames(final_mat)), ]
-rownames(final_mat) <- symbol_map[rownames(final_mat)]
+  #intersect(rownames(unique_mat),rownames(duplicate_mat))
 
-if (return_seurat) {
-  # Create a new Seurat object using the updated matrix
-  Seurat_obj <- CreateSeuratObject(counts = final_mat, meta.data = Seurat_obj[[]], min.cells = min.cells, min.features = min.features)
+  # Combine the results
+  final_mat <- rbind(unique_mat, summed_duplicates)
+  #df <- as.data.frame(table(rownames(final_mat)))
+  #setdiff(rownames(final_mat), hgnc.table$Approved.Symbol)
 
-  # Add percentage of mitochondrial genes
-  if (any(grepl("^MT-", rownames(final_mat), ignore.case = TRUE))) {
-    Seurat_obj[["percent.mt"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^MT-", assay = assay)
+  if (return_seurat) {
+    # Create a new Seurat object using the updated matrix
+    Seurat_obj <- CreateSeuratObject(counts = final_mat, meta.data = Seurat_obj[[]], min.cells = min.cells, min.features = min.features)
+
+    # Add percentage of mitochondrial genes
+    if (any(grepl("^MT-", rownames(final_mat), ignore.case = TRUE))) {
+      Seurat_obj[["percent.mt"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^MT-", assay = assay)
+    } else {
+      Seurat_obj[["percent.mt"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^mt-", assay = assay)
+    }
+
+    # Add percentage of ribosomal genes
+    Seurat_obj[["percent.rb"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^RPS|^RPL|^Rpl|^Rps", assay = assay)
+
+    return(Seurat_obj)
   } else {
-    Seurat_obj[["percent.mt"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^mt-", assay = assay)
+    return(final_mat)
   }
-
-  # Add percentage of ribosomal genes
-  Seurat_obj[["percent.rb"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^RPS|^RPL|^Rpl|^Rps", assay = assay)
-
-  return(Seurat_obj)
-} else {
-  return(final_mat)
 }
-}
-
