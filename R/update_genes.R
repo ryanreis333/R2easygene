@@ -43,7 +43,7 @@
 #' @export
 #'
 
-update_genes <- function(Seurat_obj, assay = "RNA", return_seurat = TRUE, min.cells = 3, min.features = 200) {
+update_genes <- function(Seurat_obj, select_assay = "RNA", return_seurat = TRUE, min.cells = 3, min.features = 200) {
 
   # Load gene symbol mapping table from HGNChelper
   hgnc.table <- HGNChelper::hgnc.table
@@ -53,7 +53,7 @@ update_genes <- function(Seurat_obj, assay = "RNA", return_seurat = TRUE, min.ce
   approved_genes <- unique(hgnc.table$Approved.Symbol)
 
   # Extract counts matrix from the specified assay in Seurat object
-  mat <- GetAssayData(new.obj, assay = "RNA")
+  mat <- GetAssayData(new.obj, assay = select_assay)
   rownames(mat) <- rownames(new.obj)
   colnames(mat) <- colnames(new.obj)
 
