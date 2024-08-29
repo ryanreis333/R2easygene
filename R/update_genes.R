@@ -53,9 +53,9 @@ update_genes <- function(Seurat_obj, select_assay = "RNA", return_seurat = TRUE,
   approved_genes <- unique(hgnc.table$Approved.Symbol)
 
   # Extract counts matrix from the specified assay in Seurat object
-  mat <- GetAssayData(new.obj, assay = select_assay)
-  rownames(mat) <- rownames(new.obj)
-  colnames(mat) <- colnames(new.obj)
+  mat <- GetAssayData(Seurat_obj, assay = select_assay)
+  rownames(mat) <- rownames(Seurat_obj)
+  colnames(mat) <- colnames(Seurat_obj)
 
   # Filter genes with low counts and non-matching genes
   #keep_genes <- rownames(mat)[rowSums(mat) >= 3 & rownames(mat) %in% all_genes]
