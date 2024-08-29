@@ -103,13 +103,13 @@ update_genes <- function(Seurat_obj, select_assay = "RNA", return_seurat = TRUE,
 
     # Add percentage of mitochondrial genes
     if (any(grepl("^MT-", rownames(final_mat), ignore.case = TRUE))) {
-      Seurat_obj[["percent.mt"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^MT-", assay = assay)
+      Seurat_obj[["percent.mt"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^MT-", assay = select_assay)
     } else {
-      Seurat_obj[["percent.mt"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^mt-", assay = assay)
+      Seurat_obj[["percent.mt"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^mt-", assay = select_assay)
     }
 
     # Add percentage of ribosomal genes
-    Seurat_obj[["percent.rb"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^RPS|^RPL|^Rpl|^Rps", assay = assay)
+    Seurat_obj[["percent.rb"]] <- PercentageFeatureSet(Seurat_obj, pattern = "^RPS|^RPL|^Rpl|^Rps", assay = select_assay)
 
     return(Seurat_obj)
   } else {
