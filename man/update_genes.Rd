@@ -6,18 +6,18 @@
 \usage{
 update_genes(
   Seurat_obj,
-  assay = "RNA",
+  select_assay = "RNA",
   return_seurat = TRUE,
   min.cells = 3,
   min.features = 200
 )
 }
 \arguments{
-\item{Seurat_obj}{A Seurat object. The RNA or any specified assay counts will be used.}
+\item{Seurat_obj}{A Seurat object. The counts matrix from the specified assay will be used.}
 
-\item{assay}{The name of the assay from which to extract the counts matrix. Default is "RNA".}
+\item{select_assay}{The name of the assay from which to extract the counts matrix. Default is "RNA".}
 
-\item{return_seurat}{Logical. If TRUE, a new Seurat object is returned with the updated gene names
+\item{return_seurat}{Logical. If TRUE, a new Seurat object is returned with updated gene names
 and percentage features for mitochondrial and ribosomal genes. If FALSE, the function returns the
 updated counts matrix. Default is TRUE.}
 
@@ -45,15 +45,16 @@ percentages.
 This function leverages the HGNChelper package to ensure that all gene names
 in a Seurat object match the currently approved HGNC symbols. It filters out genes
 detected in fewer than \code{min.cells} cells and performs several operations to
-handle duplicated gene symbols. For downstream analysis, it adds the proportion of
-mitochondrial genes (if applicable) and ribosomal genes, accounting for both human
-and mouse species.
+handle duplicated gene symbols. The function sums the counts for duplicate gene symbols,
+converts the result back to a sparse matrix, and combines it with the matrix of unique genes.
+For downstream analysis, it adds the proportion of mitochondrial genes (if applicable) and
+ribosomal genes, accounting for both human and mouse species.
 }
 \examples{
 \dontrun{
 # Example with a Seurat object
-updated_seurat <- update_genes(Seurat_obj, assay = "RNA")
-updated_matrix <- update_genes(Seurat_obj, assay = "RNA", return_seurat = FALSE)
+updated_seurat <- update_genes(Seurat_obj, select_assay = "RNA")
+updated_matrix <- update_genes(Seurat_obj, select_assay = "RNA", return_seurat = FALSE)
 }
 
 }
